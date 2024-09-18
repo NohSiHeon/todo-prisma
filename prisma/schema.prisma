@@ -12,3 +12,35 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum Condition {
+  TO_DO
+  IN_PROGRESS
+  DONE
+}
+
+model Todo {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  name        String
+  description String
+  condition   Condition @default(TO_DO)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("todos")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  todos     Todo[]
+
+  @@map("users")
+}
